@@ -154,10 +154,6 @@ app.put("/users/task/updateTask/:taskId", verifyAuth, async (req, res) => {
     const { taskId } = req.params;
     const { userId } = req.user;
     const taskData = req.body;
-    console.log("taskId", taskId);
-    console.log("userId", userId);
-    console.log("taskData", taskData);
-
     const updatedtask = await updateTask(taskId, taskData, userId);
 
     return res
@@ -194,6 +190,7 @@ app.get("/users/task/getAllTasks", async (req, res) => {
 app.get("/users/tasks", verifyAuth, async (req, res) => {
   try {
     const query = req.query;
+    console.log(query);
     const task = await getQuerTasks(query);
     res.status(200).json(task);
   } catch (error) {
