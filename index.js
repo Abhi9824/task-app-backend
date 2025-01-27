@@ -82,7 +82,12 @@ app.post("/users/signup", async (req, res) => {
 app.post("/users/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email })
+      .populate("tasks", "createdAt")
+      .populate({
+        path: "tasks",
+        populate: { path: "owners", select: "name email" },
+      });
     if (!user) {
       return res.status(404).json({ message: "User Not found" });
     }
@@ -190,13 +195,23 @@ app.get("/users/task/getAllTasks", async (req, res) => {
 app.get("/users/tasks", verifyAuth, async (req, res) => {
   try {
     const query = req.query;
-    console.log(query);
-    const task = await getQuerTasks(query);
-    res.status(200).json(task);
+    const tasks = await getQuerTasks(query);
+    res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// app.get("/users/project/:projectId/task", verifyAuth, async (req, res) => {
+//   try {
+//     const { projectId } = req.params;
+//     const query = req.query;
+//     const tasks = await getQuerTasks(projectId, query);
+//     res.status(200).json(tasks);
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 app.delete("/users/deleteTask/:taskId", verifyAuth, async (req, res) => {
   const { userId } = req.user;

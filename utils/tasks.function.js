@@ -73,7 +73,6 @@ const updateTask = async (taskId, dataToupdate, userId) => {
   }
 };
 
-
 const getTaskById = async (userId) => {
   try {
     const tasks = await Task.find({ owners: userId })
@@ -118,7 +117,6 @@ const getAllTasks = async () => {
 };
 
 //query Task
-
 const getQuerTasks = async (query) => {
   try {
     const { team, owner, tags, project, status } = query;
@@ -152,7 +150,9 @@ const getQuerTasks = async (query) => {
       const tagArray = Array.isArray(tags)
         ? tags
         : tags.split(",").map((tag) => tag.trim());
-      const tagDocuments = await Tag.find({ name: { $in: tagArray } });
+      const tagDocuments = await Tag.find({
+        name: { $in: tagArray },
+      });
       if (tagDocuments.length === 0) {
         throw new Error(`No tags found for names: ${tagArray.join(", ")}`);
       }
@@ -186,17 +186,12 @@ const getQuerTasks = async (query) => {
       }
       filter.status = { $in: statusArray };
     }
-
-    console.log("Constructed filter:", filter);
-
     // Fetch tasks
     const tasks = await Task.find(filter)
       .populate("project", "name")
       .populate("team", "name")
       .populate("owners", "name email")
-      .populate("tags", "name"); // Assuming tags have a "name" field
-
-    console.log("Fetched tasks:", tasks);
+      .populate("tags", "name");
     return tasks;
   } catch (error) {
     console.error("Error in getQuerTasks:", error.message);
