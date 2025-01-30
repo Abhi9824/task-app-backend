@@ -120,8 +120,6 @@ const getAllTasks = async () => {
 const getQuerTasks = async (query) => {
   try {
     const { team, owner, tags, project, status } = query;
-    console.log("Incoming query:", query);
-
     const filter = {};
 
     // Filter by team
@@ -156,7 +154,7 @@ const getQuerTasks = async (query) => {
       if (tagDocuments.length === 0) {
         throw new Error(`No tags found for names: ${tagArray.join(", ")}`);
       }
-      filter.tags = { $all: tagDocuments.map((tag) => tag._id) }; // Matches all provided tags
+      filter.tags = { $all: tagDocuments.map((tag) => tag._id) };
     }
 
     // Filter by project
@@ -256,13 +254,11 @@ const getAllClosedTasks = async (groupBy) => {
     // Fetch all closed tasks
     const closedTasks = await Task.find({
       status: { $regex: /^closed$/i },
-    }).populate("owners", "name"); // Populate owners' names
+    }).populate("owners", "name");
 
-    // Group the tasks dynamically using JavaScript
     const groupedTasks = closedTasks.reduce((acc, task) => {
       const key = task[groupByField];
 
-      // If grouping by owners, we use the owner IDs and count tasks per owner
       if (groupBy === "owner") {
         task.owners.forEach((owner) => {
           const ownerId = owner._id.toString();
@@ -275,7 +271,6 @@ const getAllClosedTasks = async (groupBy) => {
       return acc;
     }, {});
 
-    // Fetch additional details for group names based on the grouping
     let namesMapping = {};
     if (groupBy === "project") {
       const projects = await Project.find({
@@ -294,7 +289,6 @@ const getAllClosedTasks = async (groupBy) => {
         return map;
       }, {});
     } else if (groupBy === "owner") {
-      // Use the populated owners from Task model
       namesMapping = closedTasks.reduce((map, task) => {
         task.owners.forEach((owner) => {
           map[owner._id.toString()] = owner.name;
@@ -302,8 +296,6 @@ const getAllClosedTasks = async (groupBy) => {
         return map;
       }, {});
     }
-
-    // Transform the result into the desired format
     const result = Object.entries(groupedTasks).map(([key, count]) => ({
       group: key,
       groupName: namesMapping[key] || "Unknown",

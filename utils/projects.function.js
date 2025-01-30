@@ -5,7 +5,6 @@ const { Task } = require("../models/tasks.models");
 const addProject = async (userId, projectData) => {
   try {
     const user = await User.findById(userId);
-    console.log("user", user);
     if (!user) {
       throw new Error("User not found");
     }
@@ -63,10 +62,6 @@ const getProjectById = async (userId) => {
 
 const updatedProject = async (userId, projectId, dataToUpdate) => {
   try {
-    console.log("userId", userId);
-    console.log("projectId", projectId);
-    console.log("dataToUpdate", dataToUpdate);
-
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found");
@@ -75,14 +70,6 @@ const updatedProject = async (userId, projectId, dataToUpdate) => {
     if (!project) {
       throw new Error("Project not found");
     }
-    // const task = await Task.findOne({ project: projectId });
-    // if (!task) {
-    //   throw new Error("Task related to this project not found");
-    // }
-    // const isOwner = task.owners.some((owner) => owner.toString() === userId);
-    // if (!isOwner) {
-    //   throw new Error("User is not authorized to update this project");
-    // }
     const updateProject = await Project.findByIdAndUpdate(
       projectId,
       dataToUpdate,
@@ -99,46 +86,12 @@ const updatedProject = async (userId, projectId, dataToUpdate) => {
   }
 };
 
-// const deleteProject = async (userId, projectId) => {
-//   try {
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
-//     const project = await Project.findById(projectId);
-//     if (!project) {
-//       throw new Error("Project not found");
-//     }
-
-//     const task = await Task.findOne({ project: projectId });
-//     if (!task) {
-//       throw new Error("Task related to this project not found");
-//     }
-
-//     const isOwner = task.owners.some((owner) => owner.toString() === userId);
-//     if (!isOwner) {
-//       throw new Error("User is not authorized to delete this project");
-//     }
-
-//     const deletedProject = await Project.findByIdAndDelete(projectId);
-//     if (!deletedProject) {
-//       throw new Error("Failed to delete the project");
-//     }
-
-//     return deletedProject;
-//   } catch (error) {
-//     throw new Error("Failed to delete the project: " + error.message);
-//   }
-// };
 const deleteProject = async (userId, projectId) => {
   try {
-    // Find the project
     const project = await Project.findById(projectId);
     if (!project) {
       throw new Error("Project not found");
     }
-
-    // Ensure the user is the owner of the project
     if (project.createdBy.toString() !== userId) {
       throw new Error("User is not authorized to delete this project");
     }
