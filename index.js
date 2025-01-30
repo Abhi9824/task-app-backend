@@ -347,9 +347,11 @@ app.post("/users/project/addProject", verifyAuth, async (req, res) => {
   }
   try {
     const project = await addProject(userId, projectData);
-    res.status(201).json({ message: "Added project successfully", project });
+    res
+      .status(201)
+      .json({ message: "Added project successfully", project: project });
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error", error });
   }
 });
 
@@ -366,7 +368,7 @@ app.put(
         return res.status(200).json({
           message: "Project updated successfully",
           project: project,
-        });
+        })
       } else {
         return res
           .status(404)
@@ -406,7 +408,9 @@ app.get("/users/project/getAllProjects", async (req, res) => {
   try {
     const project = await getAllProjects();
     if (project) {
-      return res.status(200).json({ message: "fetched all projects", project });
+      return res
+        .status(200)
+        .json({ message: "fetched all projects", project: project });
     } else {
       return res.status(400).json({ message: "No projects found" });
     }
@@ -422,7 +426,7 @@ app.get("/users/project/getProject", verifyAuth, async (req, res) => {
     if (project.length > 0) {
       return res
         .status(200)
-        .json({ message: "Fetched projects by Id", project });
+        .json({ message: "Fetched projects by Id", project: project });
     } else {
       return res
         .status(404)
