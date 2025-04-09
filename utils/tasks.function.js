@@ -239,7 +239,7 @@ const getAllClosedTasks = async (groupBy) => {
   try {
     const groupFields = {
       team: "team",
-      owner: "owners", // 'owners' is an array in the Task model
+      owner: "owners", 
       project: "project",
     };
 

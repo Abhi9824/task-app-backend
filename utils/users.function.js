@@ -28,8 +28,6 @@ const login = async (user, password) => {
       console.log("User or password is missing");
       return null;
     }
-    console.log("userr", user);
-    console.log("passwordr", password);
     if (!password) {
       console.log("password not provided");
       return null;
@@ -47,7 +45,7 @@ const login = async (user, password) => {
 
 const getAllUsers = async () => {
   try {
-    const user = await User.find();
+    const user = await User.find().populate("projects");
     return user;
   } catch (error) {
     throw new Error("Falied to get all users");
@@ -61,18 +59,12 @@ const getUserDetails = async (userId) => {
       .populate("teams")
       .populate({
         path: "tasks",
-        populate: { path: "owners", select: "name email" }, // Populate 'owners' in each task
+        populate: { path: "owners", select: "name email" },
       });
     console.log(user);
     if (!user) {
       throw new Error("User not found");
     }
-    // return {
-    //   id: user._id,
-    //   name: user.name,
-    //   email: user.email,
-    //   createdAt: user.createdAt,
-    // };
     return user;
   } catch (error) {
     throw new Error(error.message);
